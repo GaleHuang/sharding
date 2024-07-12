@@ -64,6 +64,8 @@ type Config struct {
 	// 	}
 	ShardingAlgorithm func(columnValue any) (suffix string, err error)
 
+	ShardingKeyDefiner func(tableName string) (key string, err error)
+
 	// ShardingSuffixs specifies a function to generate all table's suffix.
 	// Used to support Migrator and generate PrimaryKey.
 	// For example, this function get a mod all sharding suffixs.
@@ -206,6 +208,13 @@ func (s *Sharding) compile() error {
 					suffixs = append(suffixs, suffix)
 				}
 				return
+			}
+		}
+
+		if c.ShardingKeyDefiner != nil {
+			shardingKey, err := c.ShardingKeyDefiner(t)
+			if err == nil {
+				c.ShardingKey = shardingKey
 			}
 		}
 
