@@ -64,6 +64,10 @@ type Config struct {
 	// 	}
 	ShardingAlgorithm func(columnValue any) (suffix string, err error)
 
+	// ShardingKeyDefiner specifies a function to generate the sharding key for specify table.
+	// Which is useful for scenarios that require different sharding key for different tables.
+	// For example, this function implements a map based sharding key definer.
+
 	ShardingKeyDefiner func(tableName string) (key string, err error)
 
 	// ShardingSuffixs specifies a function to generate all table's suffix.
