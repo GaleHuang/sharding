@@ -107,6 +107,9 @@ type Config struct {
 	//		return nodes[tableIdx].Generate().Int64()
 	//	}
 	PrimaryKeyGeneratorFn func(tableIdx int64) int64
+
+	// MustParseSuccess When MustParseSuccess enabled, sql parse fail will return an error instead of ignoring
+	MustParseSuccess bool
 }
 
 func Register(config Config, tables ...any) *Sharding {
@@ -319,6 +322,9 @@ func (s *Sharding) resolve(query string, args ...any) (ftQuery, stQuery, tableNa
 
 	expr, err := sqlparser.NewParser(strings.NewReader(query)).ParseStatement()
 	if err != nil {
+		if s._config.MustParseSuccess {
+			return ftQuery, stQuery, tableName, err
+		}
 		return ftQuery, stQuery, tableName, nil
 	}
 
