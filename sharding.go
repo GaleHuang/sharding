@@ -538,6 +538,10 @@ func (s *Sharding) nonInsertValue(key string, condition sqlparser.Expr, args ...
 					case *sqlparser.BindExpr:
 						v := args[expr.Pos]
 						var ok bool
+						if idUint32, ok := v.(uint32); ok {
+							v = int64(idUint32)
+							return nil
+						}
 						if id, ok = v.(int64); !ok {
 							return fmt.Errorf("ID should be int64 type")
 						}
