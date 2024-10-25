@@ -2,6 +2,7 @@ package sharding
 
 import (
 	"fmt"
+
 	"gorm.io/gorm/migrator"
 	"gorm.io/gorm/schema"
 
@@ -11,6 +12,20 @@ import (
 type ShardingDialector struct {
 	gorm.Dialector
 	sharding *Sharding
+}
+
+func (d ShardingDialector) SavePoint(tx *gorm.DB, name string) error {
+	if dialector, ok := d.sharding.Dialector.(gorm.SavePointerDialectorInterface); ok {
+		return dialector.SavePoint(tx, name)
+	}
+	return gorm.ErrUnsupportedDriver
+}
+
+func (d ShardingDialector) RollbackTo(tx *gorm.DB, name string) error {
+	if dialector, ok := d.sharding.Dialector.(gorm.SavePointerDialectorInterface); ok {
+		return dialector.RollbackTo(tx, name)
+	}
+	return gorm.ErrUnsupportedDriver
 }
 
 type ShardingMigrator struct {
