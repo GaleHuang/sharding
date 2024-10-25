@@ -319,6 +319,9 @@ func (s *Sharding) resolve(query string, args ...any) (ftQuery, stQuery, tableNa
 	if len(s.configs) == 0 {
 		return
 	}
+	if strings.Contains(query, "SAVEPOINT") {
+		return
+	}
 
 	expr, err := sqlparser.NewParser(strings.NewReader(query)).ParseStatement()
 	if err != nil {

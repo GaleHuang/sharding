@@ -2,6 +2,7 @@ package sharding
 
 import (
 	"fmt"
+
 	"gorm.io/gorm/migrator"
 	"gorm.io/gorm/schema"
 
@@ -11,6 +12,14 @@ import (
 type ShardingDialector struct {
 	gorm.Dialector
 	sharding *Sharding
+}
+
+func (dialector ShardingDialector) SavePoint(tx *gorm.DB, name string) error {
+	return tx.Exec("SAVEPOINT " + name).Error
+}
+
+func (dialector ShardingDialector) RollbackTo(tx *gorm.DB, name string) error {
+	return tx.Exec("ROLLBACK TO SAVEPOINT " + name).Error
 }
 
 type ShardingMigrator struct {
